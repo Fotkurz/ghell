@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <errno.h>
 #include <sys/wait.h>
 
 /*
@@ -70,7 +69,7 @@ int ghell_exit(char **args) {
 // returns a char *.
 // modern c stdio.h have a getline() func that already implements it, but I'll
 // keep this one 
-char *read_line(void) {
+char *ghell_read_line(void) {
     int bufsize = GHELL_RL_BUFSIZE;
     int position = 0;
     int c;
@@ -114,7 +113,7 @@ char *read_line(void) {
 // splits a char array into multiple args using the GHELL_TOK_DELIM as delim.
 // Dynamically expands the buf size if required.
 // returns the splitted tokens.
-char **split_line(char *line) {
+char **ghell_split_line(char *line) {
     int bufsize = GHELL_TOK_BUFSIZE, position = 0;
     char **tokens = malloc(bufsize * sizeof(char*));
     char *token;
@@ -148,22 +147,22 @@ char **split_line(char *line) {
 }
 
 // read_line_v2 uses c getline
-char *read_line_v2(void)
-{
-  char *line = NULL;
-  ssize_t bufsize = 0; // have getline allocate a buffer for us
+// char *read_line_v2(void)
+// {
+//   char *line = NULL;
+//   ssize_t bufsize = 0; // have getline allocate a buffer for us
 
-  if (getline(&line, &bufsize, stdin) == -1){
-    if (feof(stdin)) {
-      exit(EXIT_SUCCESS);  // We recieved an EOF
-    } else  {
-      perror("readline");
-      exit(EXIT_FAILURE);
-    }
-  }
+//   if (getline(&line, &bufsize, stdin) == -1){
+//     if (feof(stdin)) {
+//       exit(EXIT_SUCCESS);  // We recieved an EOF
+//     } else  {
+//       perror("readline");
+//       exit(EXIT_FAILURE);
+//     }
+//   }
 
-  return line;
-}
+//   return line;
+// }
 
 int ghell_launch(char **args) {
     pid_t pid, wpid;
@@ -215,9 +214,12 @@ void ghell_loop(void) {
 
     do {
         printf("> ");
-        line = read_line();
-        args = split_line(line);
-        status = ghell_launch(args);
+        line = ghell_read_line();
+        args = ghell_split_line(line);
+        status = ghell_execute(args);
+
+        free(line);
+        free(args);
     } while (status);
 }
 
