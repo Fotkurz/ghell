@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include "cmd.h"
+
 
 /*
   List of builtin commands, followed by their corresponding functions.
@@ -9,22 +11,31 @@
 char *builtin_str[] = {
     "cd",
     "help",
-    "exit"
+    "exit",
+    "pwd"
+};
+
+char *builtin_help_message[] = {
+    "change directory",
+    "display help message",
+    "exit ghell program",
+    "show current directory path"
 };
 
 int (*builtin_func[]) (char **) = {
     &ghell_cd,
     &ghell_help,
-    &ghell_exit
+    &ghell_exit,
+    &ghell_pwd
 };
 
 int ghell_num_builtins() {
     return sizeof(builtin_str) / sizeof(char *);
 }
 
-/*
-  Builtin function implementations.
-*/
+// /*
+//   Builtin function implementations.
+// */
 int ghell_cd(char **args) {
     if (args[1] == NULL) {
         fprintf(stderr, "ghell: expected argument to \"cd\"\n");
@@ -39,11 +50,11 @@ int ghell_cd(char **args) {
 int ghell_help(char **args) {
     int i;
     printf("Fotkurz GHELL\n\n");
-    printf("  Type the program name and the args, hit enter and enjoy.\n");
-    printf("  Implemented builtins:\n");
+    printf("Type the program name and the args, hit enter and enjoy.\n");
+    printf("Implemented builtins:\n");
 
     for (i = 0; i < ghell_num_builtins(); i++) {
-        printf("\t- %s\n", builtin_str[i]);
+        printf("\t%s - %s\n", builtin_str[i], builtin_help_message[i]);
     }
 
     printf("\n  Use the man command for information on other programs. (e.g. man cd)\n");
@@ -52,4 +63,18 @@ int ghell_help(char **args) {
 
 int ghell_exit(char **args) {
     return 0;
+}
+
+int ghell_pwd(char **args) {
+    char *buffer = malloc(sizeof(char) * 512);
+
+    char *cwd = getcwd(buffer, sizeof(char) * 512 + 1);
+    if (cwd == NULL) {
+        perror("ghell");
+        return 0;
+    }
+
+    printf("%s\n", cwd);
+    free(buffer);
+    return 1;
 }
