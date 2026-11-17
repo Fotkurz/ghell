@@ -7,6 +7,7 @@ Function Declarations for builtin shell commands:
 int ghell_cd(char **args);
 int ghell_help(char **args);
 int ghell_exit(char **args);
+int ghell_pwd(char **args);
 
 int ghell_num_builtins();
 

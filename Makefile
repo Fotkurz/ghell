@@ -1,4 +1,4 @@
 
 
 all:
-	gcc ghell.c -o ghell
+	gcc ghell.c cmd.c parser.c -o ghell.out
