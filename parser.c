@@ -46,26 +46,6 @@ char *ghell_read_line(void) {
     }
 }
 
-
-// read_line_v2 uses c getline
-char *ghell_read_line_v2(void)
-{
-  char *line = NULL;
-  ssize_t bufsize = 0; // have getline allocate a buffer for us
-
-  if (getline(&line, &bufsize, stdin) == -1){
-    if (feof(stdin)) {
-      exit(EXIT_SUCCESS);  // We recieved an EOF
-    } else  {
-      perror("readline");
-      exit(EXIT_FAILURE);
-    }
-  }
-
-  return line;
-}
-
-
 // tokenizer buff size
 #define GHELL_TOK_BUFSIZE 64
 // delimiter for tokenizer

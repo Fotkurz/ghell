@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include "cmd.h"
+#include "pwd.h"
 
 
 /*
@@ -66,15 +67,5 @@ int ghell_exit(char **args) {
 }
 
 int ghell_pwd(char **args) {
-    char *buffer = malloc(sizeof(char) * 512);
-
-    char *cwd = getcwd(buffer, sizeof(char) * 512 + 1);
-    if (cwd == NULL) {
-        perror("ghell");
-        return 0;
-    }
-
-    printf("%s\n", cwd);
-    free(buffer);
-    return 1;
+    return ghell_pwd_controller(args);
 }
